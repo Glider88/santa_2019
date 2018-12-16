@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker run -p 9001:9000 -v /home/psakharov/dev/kaggle:/opt/docker/notebooks/kaggle -p 4040-4045:4040-4045 andypetrella/spark-notebook:0.9.0-SNAPSHOT-scala-2.11.8-spark-2.3.0-hadoop-2.7.2-with-hive
