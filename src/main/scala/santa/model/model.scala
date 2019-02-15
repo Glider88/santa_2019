@@ -45,9 +45,9 @@ package object model {
 
   def closestCities(city1: CityBox, city2: CityBox): (City, City) = {
     val allPairs = for {
-      c1 <- city1
-      c2 <- city2
-    } yield (c1._2, c2._2)
+      c1 <- city1.values
+      c2 <- city2.values
+    } yield (c1, c2)
 
     allPairs.minBy {case (p1, p2) => distance(p1.point, p2.point) }
   }
@@ -84,7 +84,7 @@ package object model {
     distancesWithPenalty.sum
   }
 
-  def tsp[A](elements: Set[A]): Seq[Seq[A]] = {
+  def tsp[A](elements: Set[A]): List[List[A]] = {
     elements.toList.permutations.map(_.toList).toList
   }
 
