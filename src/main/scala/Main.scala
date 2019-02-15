@@ -9,16 +9,16 @@ object Main extends App {
   val polar = CityRepository.findNorthPole
   val rootCluster = Cluster(polar, cities, Shell.generateShell(polar, cities))
 
-  def clusterization(root: Cluster): SetTree = {
+  def clusterization(level: Int, root: Cluster): SetTree = {
     val clusters = Clusterization.run(root)
     if (clusters.size == 1) {
-      SetLeaf(box = root)
+      SetLeaf(level, box = root)
     } else {
-      SetBranch(box = root, row = for {cluster <- clusters} yield clusterization(cluster))
+      SetBranch(level, box = root, row = for {cluster <- clusters} yield clusterization(level + 1, cluster))
     }
   }
 
-  val setTree = clusterization(rootCluster)
+  val setTree = clusterization(0, rootCluster)
   println(setTree)
 
   def tracking(start: City, end: City, original: SetTree): ListTree = original match {

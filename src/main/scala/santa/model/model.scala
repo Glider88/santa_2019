@@ -15,15 +15,17 @@ package object model {
   type Shell = Set[City]
 
   case class Cluster(center: Point, cities: CityBox, shell: Shell) {
-    override def toString: String = "cluster(" + cities.values.mkString(", ") + ")"
+    override def toString: String = "(" + cities.values.mkString(", ") + ")"
   }
 
   implicit def CityToPoint(city: City): Point = city.point
 
-  sealed abstract class SetTree(val box: Cluster)
-  case class SetBranch(override val box: Cluster, row: Set[SetTree]) extends SetTree(box)
-  case class SetLeaf(override val box: Cluster) extends SetTree(box) {
-    override def toString: String = "leaf(" + box.cities.values.mkString(", ") + ")"
+  sealed abstract class SetTree(val level: Int, val box: Cluster)
+  case class SetBranch(override val level: Int, override val box: Cluster, row: Set[SetTree]) extends SetTree(level, box) {
+    override def toString: String = "branch" + box + "\n" + row.map(tree => " " * tree.level + "leaf(" + tree.box + ")").mkString("\n")
+  }
+  case class SetLeaf(override val level: Int, override val box: Cluster) extends SetTree(level, box) {
+    override def toString: String = "leaf" + box
   }
 
   sealed abstract class ListTree(val start: City, val end: City, val box: Cluster)
