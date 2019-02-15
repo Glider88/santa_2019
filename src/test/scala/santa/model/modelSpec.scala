@@ -83,4 +83,25 @@ class modelSpec extends FlatSpec with Matchers {
   it should "work general case" in {
     tsp(Set(1, 2, 3)) should be (List(List(1, 2, 3), List(1, 3, 2), List(2, 1, 3), List(2, 3, 1), List(3, 1, 2), List(3, 2, 1)))
   }
+
+  "short track" should "work general case" in {
+    val start = City(1, Point(0.0, 0.0))
+    val middle1 = City(2, Point(2.0, -1.0))
+    val middle2 = City(3, Point(1.0, 1.0))
+    val end = City(4, Point(3.0, 0.0))
+
+    val leaf1 = SetLeaf(Cluster(start,   Map(1 ->   start), Set(  start)))
+    val leaf2 = SetLeaf(Cluster(middle1, Map(2 -> middle1), Set(middle1)))
+    val leaf3 = SetLeaf(Cluster(middle2, Map(3 -> middle2), Set(middle2)))
+    val leaf4 = SetLeaf(Cluster(end,     Map(4 ->     end), Set(    end)))
+
+    shortTrack(leaf1, leaf4, Set(leaf4, leaf3, leaf2, leaf1)) should be (List(leaf1, leaf3, leaf2, leaf4))
+  }
+
+  it should "work for cluster with single city" in {
+    val city = City(1, Point(0.0, 0.0))
+    val leaf = SetLeaf(Cluster(city, Map(1 -> city), Set(city)))
+
+    shortTrack(leaf, leaf, Set(leaf)) should be (List(leaf))
+  }
 }

@@ -3,21 +3,28 @@ package santa
 import scala.language.implicitConversions
 
 package object model {
+  case class Point(x: Double, y: Double) {
+    override def toString: String = s"p($x, $y)"
+  }
 
-  case class Point(x: Double, y: Double)
-  case class City(id: Int, point: Point)
+  case class City(id: Int, point: Point) {
+    override def toString: String = s"c#$id(${point.x}, ${point.y})"
+  }
 
   type CityBox = Map[Int, City]
   type Shell = Set[City]
 
-  case class Cluster(center: Point, cities: CityBox, shell: Shell)
+  case class Cluster(center: Point, cities: CityBox, shell: Shell) {
+    override def toString: String = "cluster(" + cities.values.mkString(", ") + ")"
+  }
 
   implicit def CityToPoint(city: City): Point = city.point
-//  implicit def ClusterToPoint(cluster: Cluster): Point = cluster.center
 
   sealed abstract class SetTree(val box: Cluster)
-  case class SetLeaf(override val box: Cluster) extends SetTree(box)
   case class SetBranch(override val box: Cluster, row: Set[SetTree]) extends SetTree(box)
+  case class SetLeaf(override val box: Cluster) extends SetTree(box) {
+    override def toString: String = "leaf(" + box.cities.values.mkString(", ") + ")"
+  }
 
   sealed abstract class ListTree(val start: City, val end: City, val box: Cluster)
   case class ListLeaf(override val start: City, override val end: City, override val box: Cluster) extends ListTree(start, end, box)
@@ -94,6 +101,8 @@ package object model {
       distances.sum
     }
 
-    tsp(clusters).map(List(start) ++ _ ++ List(end)).minBy(trackDistance)
+    tsp(clusters)
+      .filter(perms => perms.head == start && perms.last == end)
+      .minBy(trackDistance)
   }
 }
