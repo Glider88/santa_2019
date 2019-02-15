@@ -19,6 +19,13 @@ class Vector(val start: Point, val end: Point) {
 
     new Vector(this.start, p2)
   }
+
+  override def equals(that: Any): Boolean = {
+    that match {
+      case that: Vector => that.start == this.start && that.end == that.end
+      case _ => false
+    }
+  }
 }
 
 object Vector {
