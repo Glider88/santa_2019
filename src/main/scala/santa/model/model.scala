@@ -22,10 +22,13 @@ package object model {
 
   sealed abstract class SetTree(val level: Int, val box: Cluster)
   case class SetBranch(override val level: Int, override val box: Cluster, row: Set[SetTree]) extends SetTree(level, box) {
-    override def toString: String = "branch" + box + "\n" + row.map(tree => " " * tree.level + "leaf(" + tree.box + ")").mkString("\n")
+    override def toString: String = {
+      val head = "cl: " + box.cities.values.map(_.id).mkString(", ") + "\n"
+      head + row.map(tree => "    " * tree.level + tree).mkString("\n")
+    }
   }
   case class SetLeaf(override val level: Int, override val box: Cluster) extends SetTree(level, box) {
-    override def toString: String = "leaf" + box
+    override def toString: String = "cl: " + box.cities.values.map(_.id).mkString(", ")
   }
 
   sealed abstract class ListTree(val start: City, val end: City, val box: Cluster)
