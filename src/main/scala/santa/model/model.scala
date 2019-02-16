@@ -21,14 +21,15 @@ package object model {
   implicit def CityToPoint(city: City): Point = city.point
 
   sealed abstract class SetTree(val level: Int, val box: Cluster)
+  case class SetLeaf(override val level: Int, override val box: Cluster) extends SetTree(level, box) {
+    override def toString: String = "cl: " + box.cities.values.map(_.id).mkString(", ")
+  }
+
   case class SetBranch(override val level: Int, override val box: Cluster, row: Set[SetTree]) extends SetTree(level, box) {
     override def toString: String = {
       val head = "cl: " + box.cities.values.map(_.id).mkString(", ") + "\n"
       head + row.map(tree => "    " * tree.level + tree).mkString("\n")
     }
-  }
-  case class SetLeaf(override val level: Int, override val box: Cluster) extends SetTree(level, box) {
-    override def toString: String = "cl: " + box.cities.values.map(_.id).mkString(", ")
   }
 
   sealed abstract class ListTree(val start: City, val end: City, val box: Cluster)
@@ -109,5 +110,24 @@ package object model {
     tsp(clusters)
       .filter(perms => perms.head == start && perms.last == end)
       .minBy(trackDistance)
+  }
+
+  def findByCity(city: City, setOfTree: Set[SetTree]): SetTree = {
+    def isDefined(tree: SetTree): Boolean = tree.box.cities.isDefinedAt(city.id)
+    setOfTree.find(isDefined).getOrElse(throw new RuntimeException("miss")) // break here
+  }
+
+  def findClusterCityEars(s: City, e: City, r: List[SetTree]): List[(City, City)] = {
+    val closestCityPair = for((c1, c2) <- r.init zip r.tail) yield closestCities(c1.box.cities, c2.box.cities)
+
+    val middle = (List[City]() /: closestCityPair) {
+      case (cur, el) => cur ++ List(el._1, el._2)
+    }
+
+    val allCities = List(s) ++ middle ++ List(e)
+
+    allCities.grouped(2).map {
+      case List(a, b) => (a, b)
+    }.toList
   }
 }

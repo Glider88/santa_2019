@@ -104,4 +104,62 @@ class modelSpec extends FlatSpec with Matchers {
 
     shortTrack(leaf, leaf, Set(leaf)) should be (List(leaf))
   }
+
+  "find by city" should "work" in {
+    val p = Point(0.0, 0.0)
+    val shell = Set.empty[City]
+    val c1 = City(1, p)
+    val c2 = City(2, p)
+    val c3 = City(3, p)
+
+    val branch = SetBranch(
+      0,
+      Cluster(p, Map(1 -> c1, 2 -> c2), shell),
+      Set(
+        SetLeaf(0, Cluster(p, Map(1 -> c1), shell)),
+        SetLeaf(0, Cluster(p, Map(2 -> c2), shell))
+      )
+    )
+
+    val leaf = SetLeaf(0, Cluster(p, Map(3 -> c3), shell))
+
+    findByCity(c1, Set(branch, leaf)) should be (branch)
+    findByCity(c2, Set(branch, leaf)) should be (branch)
+    findByCity(c3, Set(branch, leaf)) should be (leaf)
+  }
+
+  "find cluster ears" should "work for leaf cluster" in {
+    val p = Point(0.0, 0.0)
+    val c1 = City(1, p)
+    val c2 = City(2, p)
+    val leaf1 = SetLeaf(0, Cluster(p, Map(1 -> c1), Set(c1)))
+    val leaf2 = SetLeaf(0, Cluster(p, Map(2 -> c2), Set(c2)))
+
+    findClusterCityEars(c1, c1, List(leaf1)) should be (List((c1, c1)))
+    findClusterCityEars(c1, c2, List(leaf1, leaf2)) should be (List((c1, c1), (c2, c2)))
+  }
+
+  "find cluster ears" should "work for branch cluster" in {
+    val p = Point(0.0, 0.0)
+    val c1 = City(1, Point(0.0,  0.0))
+    val c2 = City(2, Point(1.0,  0.0))
+    val c3 = City(3, Point(2.0,  1.0))
+    val c4 = City(4, Point(2.0, -1.0))
+    val c5 = City(5, Point(3.0,  0.0))
+    val c6 = City(6, Point(4.0,  0.0))
+    val leaf1 = SetLeaf(0, Cluster(p, Map(1 -> c1), Set(c1)))
+    val leaf2 = SetLeaf(0, Cluster(p, Map(6 -> c6), Set(c6)))
+    val branch = SetBranch(
+      0,
+      Cluster(p, Map(2 -> c2, 3 -> c3, 4 -> c4, 5 -> c5), Set(c2, c3, c4, c5)),
+      Set(
+        SetLeaf(0, Cluster(p, Map(2 -> c2), Set(c2))),
+        SetLeaf(0, Cluster(p, Map(3 -> c3), Set(c3))),
+        SetLeaf(0, Cluster(p, Map(4 -> c4), Set(c4))),
+        SetLeaf(0, Cluster(p, Map(5 -> c5), Set(c5)))
+      )
+    )
+
+    findClusterCityEars(c1, c6, List(leaf1, branch, leaf2)) should be (List((c1, c1), (c2, c5), (c6, c6)))
+  }
 }
