@@ -107,7 +107,14 @@ package object model {
       distances.sum
     }
 
+    val addEnd: List[SetTree] => List[SetTree] = if (start == end && clusters.size > 1) {
+      clusterList: List[SetTree] => { clusterList :+ end }
+    } else {
+      clusterList: List[SetTree] => clusterList
+    }
+
     tsp(clusters)
+      .map(addEnd)
       .filter(perms => perms.head == start && perms.last == end)
       .minBy(trackDistance)
   }
