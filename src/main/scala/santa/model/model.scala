@@ -21,6 +21,7 @@ package object model {
   implicit def CityToPoint(city: City): Point = city.point
 
   sealed abstract class SetTree(val level: Int, val box: Cluster)
+
   case class SetLeaf(override val level: Int, override val box: Cluster) extends SetTree(level, box) {
     override def toString: String = "cl: " + box.cities.values.map(_.id).mkString(", ")
   }
@@ -32,9 +33,18 @@ package object model {
     }
   }
 
-  sealed abstract class ListTree(val start: City, val end: City, val box: Cluster)
-  case class ListLeaf(override val start: City, override val end: City, override val box: Cluster) extends ListTree(start, end, box)
-  case class ListBranch(override val start: City, override val end: City, override val box: Cluster, row: List[ListTree]) extends ListTree(start, end, box)
+  sealed abstract class ListTree(val level: Int, val start: City, val end: City, val box: Cluster)
+
+  case class ListLeaf(override val level: Int, override val start: City, override val end: City, override val box: Cluster) extends ListTree(level, start, end, box) {
+    override def toString: String = "cl: " + box.cities.values.map(_.id).mkString(", ")
+  }
+
+  case class ListBranch(override val level: Int, override val start: City, override val end: City, override val box: Cluster, row: List[ListTree]) extends ListTree(level, start, end, box) {
+    override def toString: String = {
+      val head = "cl: " + box.cities.values.map(_.id).mkString(", ") + "\n"
+      head + row.map(tree => "    " * tree.level + tree).mkString("\n")
+    }
+  }
 
   def distance(p1: Point, p2: Point): Double = {
     Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2))
