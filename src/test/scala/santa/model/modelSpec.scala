@@ -105,16 +105,6 @@ class modelSpec extends FlatSpec with Matchers {
     shortTrack(leaf, leaf, Set(leaf)) should be (List(leaf))
   }
 
-  it should "work when start and end city same" in {
-    val point = Point(0.0, 0.0)
-    val city1 = City(1, point)
-    val city2 = City(2, point)
-    val leaf1 = SetLeaf(0, Cluster(point, Map(1 -> city1), Set(city1)))
-    val leaf2 = SetLeaf(0, Cluster(point, Map(2 -> city2), Set(city2)))
-
-    shortTrack(leaf1, leaf1, Set(leaf1, leaf2)) should be (List(leaf1, leaf2, leaf1))
-  }
-
   "find by city" should "work" in {
     val p = Point(0.0, 0.0)
     val shell = Set.empty[City]
