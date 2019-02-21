@@ -75,6 +75,13 @@ package object model {
     allPairs.minBy {case (p1, p2) => distance(p1.point, p2.point) }
   }
 
+  def closestCity(city: City, clusters: Set[Cluster]): City = {
+    val cities = clusters.flatMap(_.cities).toMap
+    val startAndEndCity = closestCities(Map(0 -> city), cities)
+
+    startAndEndCity._2
+  }
+
   def primesTo(N: Int): Set[Int] = {
     val isPrime = collection.mutable.BitSet(2 to N: _*) -- (4 to N by 2)
     for (p <- 2 +: (3 to Math.sqrt(N).toInt by 2) if isPrime(p)) {
@@ -117,14 +124,17 @@ package object model {
       distances.sum
     }
 
-    tsp(clusters)
-      .filter(perms => perms.head == start && perms.last == end)
-      .minBy(trackDistance)
+    val tmp = tsp(clusters).filter(perms => perms.head == start && perms.last == end)
+    if (tmp.isEmpty) {
+      throw new RuntimeException(s"catch: start: $start, end: $end, clusters: $clusters")
+    }
+
+    tmp.minBy(trackDistance)
   }
 
   def findByCity(city: City, setOfTree: Set[SetTree]): SetTree = {
     def isDefined(tree: SetTree): Boolean = tree.box.cities.isDefinedAt(city.id)
-    setOfTree.find(isDefined).getOrElse(throw new RuntimeException("miss")) // break here
+    setOfTree.find(isDefined).getOrElse(throw new RuntimeException(s"miss: $city in \n$setOfTree"))
   }
 
   def findClusterCityEars(s: City, e: City, r: List[SetTree]): List[(City, City)] = {

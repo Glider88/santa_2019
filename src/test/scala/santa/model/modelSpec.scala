@@ -72,6 +72,18 @@ class modelSpec extends FlatSpec with Matchers {
     }
   }
 
+  it should "calculate between city and clusters" in {
+    val city1 = City(1, Point( 0.0,  0.0))
+    val city2 = City(2, Point( 2.0,  2.0))
+    val city3 = City(3, Point( 3.0,  3.0))
+    val city4 = City(4, Point(-1.0, -1.0))
+
+    val cluster1 = Cluster(Point(0.0, 0.0), Map(2 -> city2), Set(city2))
+    val cluster2 = Cluster(Point(0.0, 0.0), Map(3 -> city3, 4 -> city4), Set(city3, city4))
+
+    closestCity(city1, Set(cluster1, cluster2)) should be (city4)
+  }
+
   "tsp" should "work for set with single element" in {
     tsp(Set(1)) should be (List(List(1)))
   }

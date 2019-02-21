@@ -17,9 +17,12 @@ object Visualization {
       encodeX("latitude", Quant).
       encodeY("longitude", Quant).
       configCell(width=1280.0, height=1024.0).
-      encodeSize(value=1).
+      encodeSize(value=300).
+      encodeColor(field="id", dataType= Nominal).
+      encodeText(field="id", dataType= Nominal).
       html.
       pageHTML("vegas")
+
 
     save(html)
   }
