@@ -146,8 +146,16 @@ package object model {
 
     val allCities = List(s) ++ middle ++ List(e)
 
-    allCities.grouped(2).map {
+    val ears = allCities.grouped(2).map {
       case List(a, b) => (a, b)
     }.toList
+
+    ears.zipWithIndex.map {
+      case ((start, end), index) if start == end && r(index).box.cities.size > 1 => {
+        val otherEnd = closestCities(Map(start.id -> start), r(index).box.cities.filterKeys(_ != start.id))
+        (start, otherEnd._2)
+      }
+      case ((start, end), _) => (start, end)
+    }
   }
 }

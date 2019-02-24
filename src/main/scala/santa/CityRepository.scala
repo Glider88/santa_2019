@@ -4,7 +4,7 @@ import santa.model.{City, CityBox}
 
 object CityRepository {
   private val allCities: CityBox = CSV.parse("cities.csv", CSV.parseCity).map(city => city.id -> city).toMap
-  private val cities = allCities.filter(el => el._1 != 0 && math.random < 0.00005) + (0 -> allCities.getOrElse(0, throw new RuntimeException("Can't find City#0")))
+  private val cities = allCities.filter(el => el._1 != 0 && math.random < 0.005) + (0 -> allCities.getOrElse(0, throw new RuntimeException("Can't find City#0")))
 
   def find(id: Int): City = {
     cities.getOrElse(id, throw new RuntimeException(s"Can't find City#$id"))

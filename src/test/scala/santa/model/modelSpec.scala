@@ -151,7 +151,7 @@ class modelSpec extends FlatSpec with Matchers {
     findClusterCityEars(c1, c2, List(leaf1, leaf2)) should be (List((c1, c1), (c2, c2)))
   }
 
-  "find cluster ears" should "work for branch cluster" in {
+  it should "work for branch cluster" in {
     val p = Point(0.0, 0.0)
     val c1 = City(1, Point(0.0,  0.0))
     val c2 = City(2, Point(1.0,  0.0))
@@ -173,5 +173,25 @@ class modelSpec extends FlatSpec with Matchers {
     )
 
     findClusterCityEars(c1, c6, List(leaf1, branch, leaf2)) should be (List((c1, c1), (c2, c5), (c6, c6)))
+  }
+
+  it should "start and end city not same for not single cluster" in {
+    val p = Point(0.0, 0.0)
+    val c1 = City(1, Point( 1.0, 0.0))
+    val c2 = City(2, Point( 0.0, 1.0))
+    val c3 = City(3, Point( 0.0, 2.0))
+    val c4 = City(4, Point(-1.0, 0.0))
+    val leaf1 = SetLeaf(0, Cluster(p, Map(1 -> c1), Set(c1)))
+    val leaf2 = SetLeaf(0, Cluster(p, Map(4 -> c4), Set(c4)))
+    val branch = SetBranch(
+      0,
+      Cluster(p, Map(2 -> c2, 3 -> c3), Set(c2, c3)),
+      Set(
+        SetLeaf(0, Cluster(p, Map(2 -> c2), Set(c2))),
+        SetLeaf(0, Cluster(p, Map(3 -> c3), Set(c3)))
+      )
+    )
+
+    findClusterCityEars(c1, c4, List(leaf1, branch, leaf2)) should be (List((c1, c1), (c2, c3), (c4, c4)))
   }
 }
