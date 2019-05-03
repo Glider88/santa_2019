@@ -97,10 +97,10 @@ class modelSpec extends FlatSpec with Matchers {
   }
 
   "short track" should "work general case" in {
-    val start = City(1, Point(0.0, 0.0))
+    val start   = City(1, Point(0.0,  0.0))
     val middle1 = City(2, Point(2.0, -1.0))
-    val middle2 = City(3, Point(1.0, 1.0))
-    val end = City(4, Point(3.0, 0.0))
+    val middle2 = City(3, Point(1.0,  1.0))
+    val end     = City(4, Point(3.0,  0.0))
 
     val leaf1 = SetLeaf(0, Cluster(start,   Map(1 ->   start), Set(  start)))
     val leaf2 = SetLeaf(0, Cluster(middle1, Map(2 -> middle1), Set(middle1)))
@@ -115,6 +115,24 @@ class modelSpec extends FlatSpec with Matchers {
     val leaf = SetLeaf(0, Cluster(city, Map(1 -> city), Set(city)))
 
     shortTrack(leaf, leaf, Set(leaf)) should be (List(leaf))
+  }
+
+  it should "work when start leaf equals end leaf" in {
+    val start   = City(1, Point(0.0,  0.0))
+    val middle1 = City(2, Point(1.0,  1.0))
+    val middle2 = City(3, Point(2.0, -1.0))
+    val middle3 = City(4, Point(3.0,  0.0))
+
+
+    val leaf1 = SetLeaf(0, Cluster(start,   Map(1 ->   start), Set(  start)))
+    val leaf2 = SetLeaf(0, Cluster(middle1, Map(2 -> middle1), Set(middle1)))
+    val leaf3 = SetLeaf(0, Cluster(middle2, Map(3 -> middle2), Set(middle2)))
+    val leaf4 = SetLeaf(0, Cluster(middle3, Map(4 -> middle3), Set(middle3)))
+
+    val expected1 = List(leaf1, leaf2, leaf4, leaf3, leaf1)
+    val expected2 = List(leaf1, leaf3, leaf4, leaf2, leaf1)
+
+    shortTrack(leaf1, leaf1, Set(leaf4, leaf3, leaf2, leaf1)) should (be (expected1) or be (expected2))
   }
 
   "find by city" should "work" in {

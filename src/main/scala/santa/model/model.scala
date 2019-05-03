@@ -124,12 +124,13 @@ package object model {
       distances.sum
     }
 
-    val tmp = tsp(clusters).filter(perms => perms.head == start && perms.last == end)
-    if (tmp.isEmpty) {
-      throw new RuntimeException(s"catch: start: $start, end: $end, clusters: $clusters")
+    val middle = clusters - (start, end)
+    if (middle.isEmpty) {
+      if (start == end) List(start) else List(start, end)
+    } else {
+      val tmp = tsp(middle).map(List(start) ++ _ ++ List(end))
+      tmp.minBy(trackDistance)
     }
-
-    tmp.minBy(trackDistance)
   }
 
   def findByCity(city: City, setOfTree: Set[SetTree]): SetTree = {

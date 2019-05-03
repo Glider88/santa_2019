@@ -45,21 +45,7 @@ object Main extends App {
     }
   }
 
-  val firstLevelBranch = setTree match {
-    case _: SetLeaf => throw new RuntimeException("need more cities")
-    case t: SetBranch => t.row
-  }
-
-  val firstLevelClusters: Set[Cluster] = firstLevelBranch.map(_.box)
-
-  val polarCluster = firstLevelClusters.find(_.cities.contains(0)).getOrElse(throw new RuntimeException("cannot find polar cluster"))
-  val otherClusters = firstLevelClusters - polarCluster
-  val endCity = closestCity(polar, otherClusters)
-
-  println("-----------------------------------------------")
-  println(endCity)
-
-  val listTree = tracking(polar, endCity, setTree)
+  val listTree = tracking(polar, polar, setTree)
   println("-----------------------------------------------")
   println(listTree)
 
@@ -79,7 +65,7 @@ object Main extends App {
   import java.io._
 
   val now = Calendar.getInstance().getTime
-  val format = new SimpleDateFormat("HH_ mm_ss")
+  val format = new SimpleDateFormat("HH_mm_ss")
   val name = format.format(now)
 
   saveTrack(s"$name.csv", resultCities)
